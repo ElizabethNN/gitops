@@ -1,0 +1,22 @@
+{
+        email nikita.kutovoy@gmail.com
+        metrics {
+                per_host
+                observe_catchall_hosts
+        }
+}
+
+woodpecker.kitara.space {
+        reverse_proxy 192.168.0.202:8000
+}
+
+nexus.kitara.space {
+        reverse_proxy 192.168.0.201:8081
+}
+
+*.kitara.space {
+        tls {
+                dns cloudflare {env.CLOUDFLARE_API_TOKEN} 
+        }
+        respond "Yeah someday you will land in k8s service."
+}

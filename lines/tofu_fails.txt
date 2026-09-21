@@ -1,0 +1,6 @@
+tofu apply failed. Skill issue, probably mine.
+Congrats, you broke your own homelab. Again.
+Terraform took one look at this diff and nope'\''d out.
+Error 1: no. Error 2: absolutely not.
+Another masterpiece of self-inflicted downtime.
+The infra is fine. It is you. It is always you.

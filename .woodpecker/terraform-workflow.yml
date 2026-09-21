@@ -1,0 +1,63 @@
+when:
+  - event: push
+    branch: master
+    path:
+      include: ['infrastructure/*']
+      on_empty: true
+
+steps:
+  - name: terraform apply
+    image: ghcr.io/opentofu/opentofu:latest
+    environment:
+      TF_VAR_PM_AUTH_STRING:
+        from_secret: TF_VAR_PM_AUTH_STRING
+      TF_CLI_CONFIG_FILE: ./infrastructure/.tofurc
+    commands:
+      - set -o pipefail
+      - tofu -chdir=./infrastructure init 2>&1 | tee /woodpecker/tf_error.log
+      - tofu -chdir=./infrastructure plan 2>&1 | tee -a /woodpecker/tf_error.log
+
+  - name: send failure notification
+    image: alpine/curl
+    environment:
+      NTFY_TOPIC:
+        from_secret: NTFY_TOPIC
+    when:
+      - status: [ failure ]
+    commands:
+      - apk add --no-cache bash
+      - |
+        bash -c '
+        MSG="$(shuf -n 1 lines/tofu_fails.txt)"
+        ERR=$(tail -n 15 /woodpecker/tf_error.log 2>/dev/null || echo "no log captured, even the log gave up")
+        curl -s \
+          -H "Title: Terraform faceplanted" \
+          -H "Priority: high" \
+          -H "Tags: robot,${CI_REPO_NAME}" \
+          -d "$MSG \n\n$ERR" \
+          https://ntfy.sh/$${NTFY_TOPIC}
+          '
+      - exit 1
+
+  - name: send success notification
+    image: alpine/curl
+    when:
+      - status: [ success ]
+    environment:
+      NTFY_TOPIC:
+        from_secret: NTFY_TOPIC
+    commands:
+      - apk add --no-cache bash
+      - |
+        bash -c '
+        MSG="$(shuf -n 1 lines/tofu_success.txt)"
+        curl -s \
+          -H "Title: Terraform applied" \
+          -H "Priority: default" \
+          -H "Tags: white_check_mark,${CI_REPO_NAME}" \
+          -d "$MSG" \
+          https://ntfy.sh/$${NTFY_TOPIC}
+          '
+
+concurrency:
+  limit: 1

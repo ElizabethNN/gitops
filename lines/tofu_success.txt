@@ -1,0 +1,8 @@
+Terraform applied clean. Nobody even had to suffer.
+It worked. Write that down somewhere, it does not happen often.
+Infra updated without casualties.
+tofu apply succeeded. The homelab lives to see another commit.
+Green run. Go outside or something.
+Applied successfully. Suspiciously smooth, but I will take it.
+No errors, no drama, no roast needed today.
+Your homelab and I are both pleasantly surprised.
