@@ -54,8 +54,3 @@ resource "proxmox_virtual_environment_container" "nexus" {
   }
 
 }
-
-import {
-  id = "server/8081"
-  to = proxmox_virtual_environment_container.nexus
-}

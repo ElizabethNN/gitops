@@ -41,8 +41,3 @@ resource "proxmox_virtual_environment_container" "deb13-template" {
     type             = "debian"
   }
 }
-
-import {
-  id = "server/9999"
-  to = proxmox_virtual_environment_container.deb13-template
-}

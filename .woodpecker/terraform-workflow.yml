@@ -12,10 +12,14 @@ steps:
       TF_VAR_PM_AUTH_STRING:
         from_secret: TF_VAR_PM_AUTH_STRING
       TF_CLI_CONFIG_FILE: ./infrastructure/.tofurc
+      AWS_ACCESS_KEY_ID:
+        from_secret: AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: AWS_SECRET_ACCESS_KEY
     commands:
       - set -o pipefail
       - tofu -chdir=./infrastructure init 2>&1 | tee /woodpecker/tf_error.log
-      - tofu -chdir=./infrastructure plan 2>&1 | tee -a /woodpecker/tf_error.log
+      - tofu -chdir=./infrastructure apply -auto-approve 2>&1 | tee -a /woodpecker/tf_error.log
 
   - name: send failure notification
     image: alpine/curl

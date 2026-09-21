@@ -40,8 +40,3 @@ resource "proxmox_virtual_environment_container" "alpine-template" {
     type             = "alpine"
   }
 }
-
-import {
-  id = "server/9998"
-  to = proxmox_virtual_environment_container.alpine-template
-}

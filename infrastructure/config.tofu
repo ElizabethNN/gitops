@@ -1,4 +1,20 @@
 terraform {
+  backend "s3" {
+    bucket = "terraform-state"
+    use_lockfile = true
+    key = "state.tfstate"
+    region = "us-east-1" #doesn't really matter for backend since its self-hosted S3
+    endpoints = {
+      s3 = "s3.kitara.space"
+    }
+
+    skip_credentials_validation = true
+    skip_requesting_account_id  = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    use_path_style              = true
+  }
+
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"

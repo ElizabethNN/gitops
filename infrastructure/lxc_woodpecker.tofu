@@ -49,8 +49,3 @@ resource "proxmox_virtual_environment_container" "woodpecker" {
     nesting = true
   }
 }
-
-import {
-  id = "server/8000"
-  to = proxmox_virtual_environment_container.woodpecker
-}
