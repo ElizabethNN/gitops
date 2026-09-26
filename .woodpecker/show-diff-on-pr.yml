@@ -24,7 +24,7 @@ steps:
       - set -o pipefail
       - tofu -chdir=./infrastructure init 2>&1 | tee /woodpecker/tf_error.log
       - tofu -chdir=./infrastructure plan -input=false -out=tfplan
-      - tofu show -no-color tfplan > plan.txt
+      - tofu -chdir=./infrastructure show -no-color tfplan > plan.txt
       - |
         {
                   echo "### OpenTofu plan: $(grep -E '^(Plan:|No changes)' plan.txt || echo 'finished')"
@@ -39,10 +39,10 @@ steps:
                 } > plan.md
 
   - name: Publish results
-    image: ghcr.io/yyewolf/woodpecker-plugins/github-comment
+    image: quay.io/thegeeklab/wp-github-comment
     settings:
-      github_token:
+      api-key:
         from_secret: github_token
-      comment_path: plan.md
-      message_id: tofu_plan_message
-      update_in_place: true
+      message: plan.md
+      key: tofu_plan_message
+      update: true

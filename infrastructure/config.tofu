@@ -20,7 +20,16 @@ terraform {
       source  = "bpg/proxmox"
       version = "0.111.1"
     }
+    minio = {
+      source = "aminueza/minio"
+      version = "3.43.0"
+    }
   }
+}
+
+provider "minio" {
+  minio_server = "s3.kitara.space"
+  minio_ssl = true
 }
 
 provider "proxmox" {
