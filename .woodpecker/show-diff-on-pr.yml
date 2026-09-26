@@ -16,6 +16,10 @@ steps:
         from_secret: AWS_ACCESS_KEY_ID
       AWS_SECRET_ACCESS_KEY:
         from_secret: AWS_SECRET_ACCESS_KEY
+      MINIO_USER:
+        from_secret: AWS_ACCESS_KEY_ID
+      MINIO_PASSWORD:
+        from_secret: AWS_SECRET_ACCESS_KEY
     commands:
       - set -o pipefail
       - tofu -chdir=./infrastructure init 2>&1 | tee /woodpecker/tf_error.log
