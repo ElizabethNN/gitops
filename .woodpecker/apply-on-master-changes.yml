@@ -3,7 +3,7 @@ when:
     branch: master
     path:
       include: ['infrastructure/*']
-      on_empty: true
+      on_empty: false
 
 steps:
   - name: terraform apply
