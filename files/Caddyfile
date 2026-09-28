@@ -22,6 +22,10 @@ nexus.kitara.space {
         reverse_proxy 192.168.0.201:8081
 }
 
+kc.kitara.space {
+        reverse_proxy 192.168.0.205:8080
+}
+
 *.kitara.space {
         tls {
                 dns cloudflare {env.CLOUDFLARE_API_TOKEN}
