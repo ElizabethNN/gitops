@@ -4,6 +4,7 @@ when:
     path:
       include: ['infrastructure/*']
       on_empty: false
+  - event: manual
 
 steps:
   - name: terraform apply
