@@ -4,5 +4,6 @@ validate_certs: false
 user: terraform@pam
 want_proxmox_nodes_ansible_host: false
 want_facts: true
+strict: true
 compose:
-  ansible_host: proxmox_net0.ip | default('') | ansible.utils.ipaddr('address')
+  ansible_host: (proxmox_net0.ip | default('')).split('/')[0]
