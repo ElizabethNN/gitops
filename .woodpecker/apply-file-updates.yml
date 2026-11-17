@@ -8,7 +8,7 @@ when:
 
 steps:
   - name: ansible apply
-    image: ansible/ansible
+    image: ansible/ansible:ubuntu1404
     environment:
       SSH_KEY:
         from_secret: ANSIBLE_SSH_KEY
