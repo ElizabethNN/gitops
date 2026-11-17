@@ -8,7 +8,7 @@
   tasks:
     - name: Transfer file from git repo
       ansible.builtin.copy:
-        src: ../files/Caddyfile
+        src: ../../files/Caddyfile
         dest: /etc/caddy/
         owner: caddy
       notify: Restart caddy

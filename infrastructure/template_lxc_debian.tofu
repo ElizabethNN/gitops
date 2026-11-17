@@ -1,3 +1,4 @@
+#TODO: Double check ssh config. Looks like sshd works on 22 port
 resource "proxmox_virtual_environment_container" "deb13-template" {
   description           = "Basic debian 13 with:\n- Installed node exporter, curl, nano\n- sshd removed password auth, moved to 2224 port\n- updated packages\n- changed timezone\n"
   node_name             = "server"
