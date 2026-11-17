@@ -27,8 +27,8 @@ steps:
       - echo "$SSH_KEY" > ~/.ssh/id_ed25519
       - chmod 600 ~/.ssh/id_ed25519
       - ansible-galaxy install -r ./ansible/requirements.yaml
-      - ansible-playbook ansible/templates/*.yml -i hosts.proxmox.yml --tags file_update 2>&1 | tee -a /woodpecker/ansible_error.log
-      - ansible-playbook ansible/machines/*.yml -i hosts.proxmox.yml --tags file_update 2>&1 | tee -a /woodpecker/ansible_error.log
+      - ansible-playbook ansible/templates/*.yml -i ./ansible/hosts.proxmox.yml --tags file_update 2>&1 | tee -a /woodpecker/ansible_error.log
+      - ansible-playbook ansible/machines/*.yml -i ./ansible/hosts.proxmox.yml --tags file_update 2>&1 | tee -a /woodpecker/ansible_error.log
 
   - name: send failure notification
     image: alpine/curl
