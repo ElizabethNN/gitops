@@ -1,5 +1,5 @@
 {
-        email you@kitara.space
+        email nikita.kutovoy@gmail.com
         metrics {
                 per_host
                 observe_catchall_hosts
@@ -22,7 +22,7 @@ nexus.kitara.space {
         reverse_proxy 192.168.0.201:8081
 }
 
-kc.kitara.space {
+auth.kitara.space {
         reverse_proxy 192.168.0.205:8080
 }
 
