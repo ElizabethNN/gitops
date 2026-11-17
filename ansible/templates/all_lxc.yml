@@ -8,8 +8,8 @@
   tasks:
     - name: Transfer file from git repo
       ansible.builtin.copy:
-        src: ../files/trusted_keys.pub
-        dest: /root/.ssh/
+        src: ../../files/trusted_keys.pub
+        dest: /root/.ssh/authorized_keys
         owner: root
       notify: Restart sshd
 
