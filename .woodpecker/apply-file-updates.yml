@@ -8,7 +8,7 @@ when:
 
 steps:
   - name: ansible apply
-    image: ansible/ansible:ubuntu1404
+    image: nexus.kitara.space/docker-hosted/ansible:latest
     environment:
       SSH_KEY:
         from_secret: ANSIBLE_SSH_KEY
