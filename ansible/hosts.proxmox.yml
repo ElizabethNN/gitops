@@ -1,0 +1,8 @@
+plugin: community.proxmox.proxmox
+url: https://192.168.0.141:8006/
+validate_certs: false
+user: terraform@pam
+want_proxmox_nodes_ansible_host: false
+want_facts: true
+compose:
+  ansible_host: proxmox_net0.ip | default('') | ansible.utils.ipaddr('address')

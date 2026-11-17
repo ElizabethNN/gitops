@@ -1,3 +1,5 @@
+#TODO: Move to forgejo. Easier to setup cleaner authentication.
+
 resource "proxmox_virtual_environment_container" "nexus" {
   description = "Nexus lxc container"
 

@@ -1,0 +1,30 @@
+---
+- name: Caddy file auto update
+  hosts: caddy-alpine-container
+  tags: file_update
+  remote_user: root
+  port: 2224
+
+  tasks:
+    - name: Transfer file from git repo
+      ansible.builtin.copy:
+        src: ../files/Caddyfile
+        dest: /etc/caddy/
+        owner: caddy
+      notify: Restart caddy
+
+  handlers:
+    - name: Restart caddy
+      ansible.builtin.service:
+        name: caddy
+        state: restarted
+
+    - name: Restart caddy
+      ansible.builtin.uri:
+        url: https://ntfy.sh/{{lookup('ansible.builtin.env', 'NTFY_TOPIC')}}
+        method: POST
+        body: "Caddy was restarted"
+        headers:
+          Title: Caddy restart
+          Priority: min
+          Tags: arrows_counterclockwise,${CI_REPO_NAME}

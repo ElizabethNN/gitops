@@ -1,0 +1,12 @@
+Ansible failed. Skill issue, probably mine.
+Congrats, you broke your own homelab. With YAML this time.
+Ansible SSHed in, took one look around, and left.
+Indentation error somewhere. Also in your life choices.
+The playbook was idempotent. You were not.
+The inventory is fine. The hosts are fine. It is you.
+Jinja2 tried its best. You did not.
+Another handler notified, another homelab destroyed.
+That task wasn'\''t idempotent, it was improvised.
+You asked for become: true. You became the problem.
+Gathered all the facts. The main one: you did this.
+Twelve tasks ran fine. You only needed the thirteenth.

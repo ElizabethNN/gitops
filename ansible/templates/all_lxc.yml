@@ -1,0 +1,30 @@
+---
+- name: Alpine
+  hosts: proxmox_all_lxc:&proxmox_all_running:!proxmox_all_templates
+  tags: file_update
+  remote_user: root
+  port: 2224
+
+  tasks:
+    - name: Transfer file from git repo
+      ansible.builtin.copy:
+        src: ../files/trusted_keys.pub
+        dest: /root/.ssh/
+        owner: root
+      notify: Restart sshd
+
+  handlers:
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
+
+    - name: Restart sshd
+      ansible.builtin.uri:
+        url: https://ntfy.sh/{{lookup('ansible.builtin.env', 'NTFY_TOPIC')}}
+        method: POST
+        body: "sshd was restarted"
+        headers:
+          Title: sshd restart
+          Priority: min
+          Tags: arrows_counterclockwise,${CI_REPO_NAME}

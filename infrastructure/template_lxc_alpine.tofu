@@ -1,3 +1,5 @@
+#TODO: Add public keys to template
+#TODO: Add python3 as to template
 resource "proxmox_virtual_environment_container" "alpine-template" {
   description           = ""
   node_name             = "server"
