@@ -12,6 +12,7 @@ steps:
     environment:
       SSH_KEY:
         from_secret: ANSIBLE_SSH_KEY
+      ANSIBLE_INVENTORY_UNPARSED_FAILED: "True"
       ANSIBLE_HOST_KEY_CHECKING: "False"
       PROXMOX_TOKEN_ID:
         from_secret: PROXMOX_TOKEN_ID
@@ -21,6 +22,7 @@ steps:
         from_secret: NTFY_TOPIC
     commands:
       #TODO: create base image and push it to nexus (to simplify pipeline)
+      - set -o pipefail
       - mkdir -p ~/.ssh
       - echo "$SSH_KEY" > ~/.ssh/id_ed25519
       - chmod 600 ~/.ssh/id_ed25519
