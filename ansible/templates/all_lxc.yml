@@ -18,13 +18,3 @@
       ansible.builtin.service:
         name: sshd
         state: restarted
-
-    - name: Restart sshd
-      ansible.builtin.uri:
-        url: https://ntfy.sh/{{lookup('ansible.builtin.env', 'NTFY_TOPIC')}}
-        method: POST
-        body: "sshd was restarted"
-        headers:
-          Title: sshd restart
-          Priority: min
-          Tags: arrows_counterclockwise,${CI_REPO_NAME}

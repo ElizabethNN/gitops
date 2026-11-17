@@ -18,13 +18,3 @@
       ansible.builtin.service:
         name: caddy
         state: restarted
-
-    - name: Restart caddy
-      ansible.builtin.uri:
-        url: https://ntfy.sh/{{lookup('ansible.builtin.env', 'NTFY_TOPIC')}}
-        method: POST
-        body: "Caddy was restarted"
-        headers:
-          Title: Caddy restart
-          Priority: min
-          Tags: arrows_counterclockwise,${CI_REPO_NAME}
