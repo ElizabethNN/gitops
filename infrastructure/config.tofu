@@ -40,7 +40,7 @@ provider "proxmox" {
     agent = true
     username = "root"
     node {
-      address = "192.168.0.141:2424"
+      address = "192.168.0.141"
       name    = "server"
       port = 2424
     }
