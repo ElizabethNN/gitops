@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:ElizabethNN/gitops.git
+    repoURL: https://github.com/ElizabethNN/gitops.git
     targetRevision: master
     # Path contains Chart.yaml, so Argo CD renders it with Helm.
     # The release name equals the app name ("argocd"), keeping resource
