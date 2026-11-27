@@ -38,3 +38,7 @@ runcmd:
   - systemctl enable --now prometheus-node-exporter
   - systemctl restart systemd-resolved
   - systemctl restart ssh
+
+  - sleep 5
+  - resolvectl domain eth0 cluster.local
+  - systemctl restart systemd-resolved
