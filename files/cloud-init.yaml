@@ -13,13 +13,19 @@ packages:
   - qemu-guest-agent
   - prometheus-node-exporter
 
-%{ if length(ssh_port) > 0 ~}
 write_files:
+%{ if length(ssh_port) > 0 ~}
   - path: /etc/ssh/sshd_config.d/10-port.conf
     permissions: "0644"
     content: |
       Port ${ssh_port}
 %{ endif ~}
+  - path: /etc/systemd/resolved.conf.d/99-no-search-domain.conf
+    permissions: "0644"
+    content: |
+      [Resolve]
+      DNS=1.1.1.1 8.8.8.8
+      Domains=cluster.local
 %{ if length(fs_setup) > 0 ~}
 fs_setup: ${jsonencode(fs_setup)}
 %{ endif ~}
@@ -30,4 +36,5 @@ mounts: ${jsonencode(mounts)}
 runcmd:
   - systemctl enable --now qemu-guest-agent
   - systemctl enable --now prometheus-node-exporter
+  - systemctl restart systemd-resolved
   - systemctl restart ssh
