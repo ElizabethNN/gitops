@@ -1,0 +1,69 @@
+when:
+  - event: manual
+
+steps:
+  - name: microk8s setup
+    image: nexus.kitara.space/docker-hosted/ansible:latest
+    environment:
+      SSH_KEY:
+        from_secret: ANSIBLE_SSH_KEY
+      ANSIBLE_INVENTORY_UNPARSED_FAILED: "True"
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+      PROXMOX_TOKEN_ID:
+        from_secret: PROXMOX_TOKEN_ID
+      PROXMOX_TOKEN_SECRET:
+        from_secret: PROXMOX_TOKEN_SECRET
+      NTFY_TOPIC:
+        from_secret: NTFY_TOPIC
+    commands:
+      - set -o pipefail
+      - mkdir -p ~/.ssh
+      - echo "$SSH_KEY" > ~/.ssh/id_ed25519
+      - chmod 600 ~/.ssh/id_ed25519
+      - ansible-galaxy install -r ./ansible/requirements.yaml
+      - ansible-playbook ansible/machines/microk8s.yml -i ./ansible/hosts.proxmox.yml 2>&1 | tee -a /woodpecker/ansible_error.log
+
+  - name: send failure notification
+    image: alpine/curl
+    environment:
+      NTFY_TOPIC:
+        from_secret: NTFY_TOPIC
+    when:
+      - status: [ failure ]
+    commands:
+      - apk add --no-cache bash
+      - |
+        bash -c '
+        MSG="$(shuf -n 1 lines/ansible_fails.txt)"
+        ERR=$(tail -n 15 /woodpecker/ansible_error.log 2>/dev/null || echo "no log captured, even the log gave up")
+        curl -s \
+          -H "Title: MicroK8s setup faceplanted" \
+          -H "Priority: high" \
+          -H "Tags: robot,${CI_REPO_NAME}" \
+          -d "$MSG \n\n$ERR" \
+          https://ntfy.sh/$${NTFY_TOPIC}
+          '
+      - exit 1
+
+  - name: send success notification
+    image: alpine/curl
+    when:
+      - status: [ success ]
+    environment:
+      NTFY_TOPIC:
+        from_secret: NTFY_TOPIC
+    commands:
+      - apk add --no-cache bash
+      - |
+        bash -c '
+        MSG="$(shuf -n 1 lines/ansible_success.txt)"
+        curl -s \
+          -H "Title: MicroK8s setup applied" \
+          -H "Priority: default" \
+          -H "Tags: white_check_mark,${CI_REPO_NAME}" \
+          -d "$MSG" \
+          https://ntfy.sh/$${NTFY_TOPIC}
+          '
+
+concurrency:
+  limit: 1
