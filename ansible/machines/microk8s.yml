@@ -53,7 +53,7 @@
 
     - name: Wait for ArgoCD to be ready
       ansible.builtin.command:
-        cmd: microk8s kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout=300s
+        cmd: microk8s kubectl wait --for=condition=Available deployment/argo-cd-argocd-server -n argocd --timeout=300s
       changed_when: false
 
     - name: Apply app-of-apps manifest
