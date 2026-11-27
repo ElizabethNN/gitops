@@ -105,7 +105,7 @@ resource "proxmox_virtual_environment_vm" "microk8s" {
     datastore_id = "nvme-thin"
 
     dns {
-      servers = ["192.168.0.1"]
+      servers = ["1.1.1.1", "8.8.8.8"]
     }
 
     ip_config {
