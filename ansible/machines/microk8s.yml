@@ -45,6 +45,23 @@
         label: "{{ item }}"
       when: item not in enabled_addons
 
+    - name: Transfer app-of-apps manifest
+      ansible.builtin.copy:
+        src: ../../k8s-applications/app-of-apps.yaml
+        dest: /tmp/app-of-apps.yaml
+        mode: "0644"
+
+    - name: Wait for ArgoCD to be ready
+      ansible.builtin.command:
+        cmd: microk8s kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout=300s
+      changed_when: false
+
+    - name: Apply app-of-apps manifest
+      ansible.builtin.command:
+        cmd: microk8s kubectl apply -f /tmp/app-of-apps.yaml
+      register: app_of_apps_apply
+      changed_when: "'configured' in app_of_apps_apply.stdout or 'created' in app_of_apps_apply.stdout"
+
     - name: Dry-run summary
       ansible.builtin.debug:
         msg: "Addons that would be enabled: {{ microk8s_addons | difference(enabled_addons) }}"
