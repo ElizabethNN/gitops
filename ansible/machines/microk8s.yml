@@ -5,13 +5,15 @@
   port: 2224
 
   vars:
-    # Order matters: community repo must be enabled before argocd
     microk8s_addons:
       - community
       - dns
       - hostpath-storage
       - ingress
-      - argocd
+
+    argocd_namespace: argocd
+    argocd_chart_src: ../../k8s-applications/argocd
+    argocd_chart_dest: /tmp/argocd-chart
 
   tasks:
     - name: Install MicroK8s
@@ -45,16 +47,49 @@
         label: "{{ item }}"
       when: item not in enabled_addons
 
+    - name: Check if Argo CD is already running
+      # Absent either on a fresh cluster or right after the addon was disabled.
+      # Once the "argocd" Application self-manages the chart, this stays
+      # "ok" and the bootstrap install below is skipped.
+      ansible.builtin.command:
+        cmd: microk8s kubectl get deployment argocd-server -n {{ argocd_namespace }}
+      failed_when: false
+      changed_when: false
+
+    - name: Clean up stale chart transfer
+      ansible.builtin.file:
+        path: "{{ argocd_chart_dest }}"
+        state: absent
+      when: argocd_deployment.rc != 0
+
+    - name: Transfer Argo CD umbrella chart
+      ansible.builtin.copy:
+        src: "{{ argocd_chart_src }}/"
+        dest: "{{ argocd_chart_dest }}"
+        mode: "0644"
+      when: argocd_deployment.rc != 0
+
+    - name: Bootstrap Argo CD from the Helm chart
+      # Release name "argocd" matches the Argo CD Application name, so the
+      # resource names are identical when Argo CD later renders the chart
+      # itself and takes ownership.
+      # NOTE: after the "argocd" Application becomes Healthy, the leftover
+      # helm release secret (sh.helm.release.v1.argocd.*) may be deleted:
+      #   microk8s kubectl -n argocd delete secret -l owner=helm,name=argocd
+      ansible.builtin.command:
+        cmd: microk8s helm3 install argocd {{ argocd_chart_dest }} --namespace {{ argocd_namespace }} --create-namespace
+      when: argocd_deployment.rc != 0
+
+    - name: Wait for Argo CD to be ready
+      ansible.builtin.command:
+        cmd: microk8s kubectl wait --for=condition=Available deployment/argocd-server -n {{ argocd_namespace }} --timeout=300s
+      changed_when: false
+
     - name: Transfer app-of-apps manifest
       ansible.builtin.copy:
         src: ../../k8s-applications/app-of-apps.yaml
         dest: /tmp/app-of-apps.yaml
         mode: "0644"
-
-    - name: Wait for ArgoCD to be ready
-      ansible.builtin.command:
-        cmd: microk8s kubectl wait --for=condition=Available deployment/argo-cd-argocd-server -n argocd --timeout=300s
-      changed_when: false
 
     - name: Apply app-of-apps manifest
       ansible.builtin.command:

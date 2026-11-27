@@ -1,0 +1,14 @@
+---
+apiVersion: v2
+name: argocd
+description: Umbrella chart wrapping the upstream Argo CD chart
+type: application
+version: 0.1.0
+
+# The dependency archive is vendored under charts/ on purpose:
+# Argo CD cannot resolve Helm repository dependencies at render time,
+# and it also keeps cluster bootstrap network-independent.
+dependencies:
+  - name: argo-cd
+    version: 10.20.0
+    repository: https://argoproj.github.io/argo-helm

@@ -14,7 +14,9 @@ spec:
     path: k8s-applications
     directory:
       recurse: true
-      exclude: app-of-apps.yaml
+      # argocd/* holds the Helm umbrella chart (Chart.yaml/values.yaml),
+      # which is managed by the dedicated "argocd" child Application instead.
+      exclude: "{app-of-apps.yaml,argocd/**}"
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

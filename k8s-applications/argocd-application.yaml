@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ElizabethNN/gitops.git
+    targetRevision: master
+    # Path contains Chart.yaml, so Argo CD renders it with Helm.
+    # The release name equals the app name ("argocd"), keeping resource
+    # names identical to the Ansible helm3 bootstrap installation.
+    path: k8s-applications/argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true

@@ -26,6 +26,12 @@ auth.kitara.space {
         reverse_proxy 192.168.0.205:8080
 }
 
+argocd.kitara.space {
+        # microk8s VM: nginx ingress (class public) routes by Host header;
+        # Argo CD serves plain HTTP (server.insecure), TLS ends here at Caddy
+        reverse_proxy 192.168.0.206:80
+}
+
 *.kitara.space {
         tls {
                 dns cloudflare {env.CLOUDFLARE_API_TOKEN}
