@@ -106,6 +106,7 @@ resource "proxmox_virtual_environment_vm" "microk8s" {
 
     dns {
       servers = ["1.1.1.1", "8.8.8.8"]
+      search  = ["cluster.local"]
     }
 
     ip_config {
