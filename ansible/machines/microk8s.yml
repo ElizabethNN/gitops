@@ -80,7 +80,7 @@
       # helm release secret (sh.helm.release.v1.argocd.*) may be deleted:
       #   microk8s kubectl -n argocd delete secret -l owner=helm,name=argocd
       ansible.builtin.command:
-        cmd: microk8s helm3 upgrade --install argocd {{ argocd_chart_dest }} --namespace {{ argocd_namespace }} --create-namespace
+        cmd: microk8s helm3 upgrade --install argocd {{ argocd_chart_dest }} -f {{ argocd_chart_dest }}/values.yaml --namespace {{ argocd_namespace }} --create-namespace
       when: argocd_deployment.rc != 0
 
     - name: Wait for Argo CD to be ready
