@@ -36,6 +36,15 @@ provider "proxmox" {
   endpoint  = "https://192.168.0.141:8006/"
   api_token = var.PM_AUTH_STRING
   insecure = true
+  ssh {
+    agent = true
+    username = "root"
+    node {
+      address = "192.168.0.141:2424"
+      name    = "server"
+      port = 2424
+    }
+  }
 }
 
 variable "PM_AUTH_STRING" {
