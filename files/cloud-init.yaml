@@ -1,0 +1,33 @@
+#cloud-config
+hostname: ${hostname}
+manage_etc_hosts: true
+
+# Root login with keys only; no default "ubuntu" user
+users: []
+disable_root: false
+ssh_pwauth: false
+ssh_authorized_keys: ${jsonencode(ssh_keys)}
+
+package_update: true
+packages:
+  - qemu-guest-agent
+  - prometheus-node-exporter
+
+%{ if length(ssh_port) > 0 ~}
+write_files:
+  - path: /etc/ssh/sshd_config.d/10-port.conf
+    permissions: "0644"
+    content: |
+      Port ${ssh_port}
+%{ endif ~}
+%{ if length(fs_setup) > 0 ~}
+fs_setup: ${jsonencode(fs_setup)}
+%{ endif ~}
+%{ if length(mounts) > 0 ~}
+mounts: ${jsonencode(mounts)}
+%{ endif ~}
+
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+  - systemctl enable --now prometheus-node-exporter
+  - systemctl restart ssh

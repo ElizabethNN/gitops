@@ -1,0 +1,51 @@
+---
+- name: MicroK8s setup
+  hosts: microk8s
+  remote_user: root
+  port: 2224
+
+  vars:
+    # Order matters: community repo must be enabled before argocd
+    microk8s_addons:
+      - community
+      - dns
+      - hostpath-storage
+      - ingress
+      - argocd
+
+  tasks:
+    - name: Install MicroK8s
+      community.general.snap:
+        name: microk8s
+        classic: true
+
+    - name: Wait for MicroK8s to be ready
+      ansible.builtin.command: microk8s status --wait-ready
+      changed_when: false
+
+    - name: Collect enabled addons
+      # Runs even with --check so the dry-run summary can diff against real state
+      ansible.builtin.command: microk8s status
+      register: microk8s_status
+      check_mode: false
+      changed_when: false
+
+    - name: Parse enabled addons
+      ansible.builtin.set_fact:
+        # Tolerates both "  dns: enabled" and "  core/dns: enabled" formats
+        enabled_addons: "{{ microk8s_status.stdout_lines
+          | map('regex_replace', '^\\s*(?:[\\w-]+/)?([\\w-]+): enabled.*$', '\\1')
+          | select('in', microk8s_addons)
+          | list }}"
+
+    - name: Enable MicroK8s addons
+      ansible.builtin.command: microk8s enable {{ item }}
+      loop: "{{ microk8s_addons }}"
+      loop_control:
+        label: "{{ item }}"
+      when: item not in enabled_addons
+
+    - name: Dry-run summary
+      ansible.builtin.debug:
+        msg: "Addons that would be enabled: {{ microk8s_addons | difference(enabled_addons) }}"
+      when: ansible_check_mode
